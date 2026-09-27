@@ -4,7 +4,7 @@
 
 Auteur : G-SOCIETY DEV
 
-"Dépôt GitHub — G" (https://github.com/souleyabdoul789-cyber/G.git?utm_source=chatgpt.com)
+"Dépôt GitHub — G" (https://github.com/souleyabdoul789-cyber/G.git)
 
 ---
 
