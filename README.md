@@ -27,6 +27,13 @@ cd G
 # Sur un PC Linux :
 cd G
 ./build.sh
+# esnuite Faites
+echo 'export PYTHONPATH="$HOME/G/python:$PYTHONPATH"' >> ~/.bashrc
+source ~/.bashrc
+#Pour que peut importe où t'es ça marchera quand même et teste
+cd ~
+python3 -c 'from G import Tensor; print(Tensor([[1,2]]))'
+#ça devrait passer 
 ```
 
 Le script compile `c/tensor.c` et `c/nn.c` en une seule librairie
@@ -39,7 +46,7 @@ Ensuite, dans tes scripts Python :
 
 ```python
 import sys
-sys.path.insert(0, "chemin/vers/G/python")
+#sys.path.insert(0, "chemin/vers/G/python") seulement si t'a pas fait écho 
 from G import Tensor, nn
 ```
 
