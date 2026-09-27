@@ -192,6 +192,7 @@ from G import Tensor, nn
 
 peut être utilisé depuis n'importe quel dossier de ton environnement Python.
 
+ou tout simplement ```pip install g-society```
 ---
 
 🧮 Les Tenseurs
