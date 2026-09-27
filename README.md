@@ -566,7 +566,7 @@ Projet développé sous l'écosystème G-SOCIETY.
 
 🔗 Projet
 
-"G — GitHub" (https://github.com/souleyabdoul789-cyber/G.git?utm_source=chatgpt.com)
+"G — GitHub" (https://github.com/souleyabdoul789-cyber/G.git)
 
 ---
 
