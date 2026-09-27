@@ -1,145 +1,578 @@
-# G
+🧠 G — Bibliothèque native d'intelligence artificielle
 
-Lib d'entraînement de réseaux de neurones, pensée pour tourner sur du
-matériel contraint (téléphone Android via Termux, ARM32/ARM64) là où
-PyTorch/TensorFlow ne s'installent pas ou plus.
+«La bibliothèque de G-SOCIETY pour expérimenter et entraîner des modèles d'intelligence artificielle, même sur du matériel aux ressources limitées.»
 
-- **Cœur en C pur** (aucune dépendance externe, portable) : tenseurs,
-  autograd (rétropropagation automatique), couches denses, optimiseur SGD.
-- **Pilotage en Python** via `ctypes` : tu écris tes boucles d'entraînement
-  normalement, en Python, comme avec n'importe quelle lib.
-- **Module RL** pour entraîner des agents autonomes (le prototype de tes
-  futurs "robots virtuels" avant de les brancher sur Godot).
+Auteur : G-SOCIETY DEV
 
-Testé et vérifié (voir section Tests) : gradients corrects sur addition,
-multiplication et produit matriciel, entraînement complet fonctionnel
-sur un XOR (classification) et un grid-world (agent RL qui atteint son
-objectif).
+"Dépôt GitHub — G" (https://github.com/souleyabdoul789-cyber/G.git?utm_source=chatgpt.com)
 
-## Installation / compilation
+---
 
-```bash
-# Sur Termux (ton Redmi A3) :
-pkg install clang        # ou gcc, selon ce que tu as
-cd G
-./build.sh
+🌍 Présentation
 
-# Sur un PC Linux :
-cd G
-./build.sh
-# esnuite Faites
-echo 'export PYTHONPATH="$HOME/G/python:$PYTHONPATH"' >> ~/.bashrc
-source ~/.bashrc
-#Pour que peut importe où t'es ça marchera quand même et teste
-cd ~
-python3 -c 'from G import Tensor; print(Tensor([[1,2]]))'
-#ça devrait passer 
-```
+G est une bibliothèque d'intelligence artificielle développée par G-SOCIETY DEV.
 
-Le script compile `c/tensor.c` et `c/nn.c` en une seule librairie
-partagée `python/G/libg.so`. Comme c'est du C99 sans rien de
-spécifique à une architecture, la même commande fonctionne sur ARM32,
-ARM64 ou x86_64 — c'est justement pour ça qu'on l'a écrite en C plutôt
-que de dépendre des wheels précompilées de PyTorch.
+L'objectif de G est de fournir une base légère permettant de construire et d'entraîner des modèles d'IA sans dépendre de frameworks lourds.
 
-Ensuite, dans tes scripts Python :
+La bibliothèque possède un cœur natif écrit en C, utilisé depuis Python grâce à des bindings "ctypes".
 
-```python
-import sys
-#sys.path.insert(0, "chemin/vers/G/python") seulement si t'a pas fait écho 
-from G import Tensor, nn
-```
+Cette architecture permet notamment de faire fonctionner G dans des environnements où l'installation de bibliothèques comme PyTorch ou TensorFlow peut être difficile, notamment sur certains appareils Android utilisant Termux.
 
-(ou installe le dossier `python/G` comme package dans ton
-`site-packages`, ou ajoute `G/python` à ton `PYTHONPATH`.)
+Le projet est actuellement en développement.
 
-## Structure du projet
+---
 
-```
+🎯 Pourquoi G ?
+
+Les frameworks modernes d'intelligence artificielle sont extrêmement puissants, mais ils peuvent être lourds et difficiles à installer sur certains appareils.
+
+G suit une autre approche :
+
+             G
+             │
+      ┌──────┴──────┐
+      │             │
+    C natif       Python
+      │             │
+      └──────┬──────┘
+             │
+          IA / ML
+             │
+     ┌───────┴────────┐
+     │                │
+ Réseaux neuronaux   Agents RL
+
+Le cœur mathématique est exécuté par du code natif, tandis que Python fournit une interface plus simple pour construire les modèles et écrire les expériences.
+
+---
+
+⚡ Caractéristiques
+
+G fournit actuellement plusieurs briques destinées à l'expérimentation en intelligence artificielle :
+
+- 🧮 Tenseurs
+- ⚙️ Calculs numériques natifs
+- 🔄 Autograd / rétropropagation automatique
+- 🧠 Réseaux de neurones
+- 🔗 Couches "Dense"
+- 📈 Optimiseur SGD
+- 📉 Fonction de perte MSE
+- 🤖 Reinforcement Learning
+- 🧠 Agents "QAgent"
+- 🧠 Agents "DQNAgent"
+- 🎮 Environnements d'apprentissage
+- 💾 Sauvegarde et chargement de modèles
+- 📱 Compatibilité avec le développement sur Termux
+
+Les fonctionnalités peuvent évoluer avec le développement du projet.
+
+---
+
+🏗️ Architecture
+
+G est divisée en deux parties principales.
+
+1. Le cœur natif
+
+Le cœur est écrit en C.
+
+Il s'occupe notamment des opérations numériques et du moteur utilisé par les tenseurs et les réseaux.
+
+c/
+├── tensor.c
+├── tensor.h
+├── nn.c
+└── nn.h
+
+2. L'interface Python
+
+Python permet d'utiliser le moteur plus facilement :
+
+python/
+└── G/
+    ├── __init__.py
+    ├── libg.so
+    ├── tensor.py
+    ├── nn.py
+    └── rl.py
+
+Python communique avec le cœur natif grâce à "ctypes".
+
+---
+
+📂 Structure du projet
+
 G/
-├── build.sh                     # compile le coeur C -> .so
+│
 ├── c/
-│   ├── tensor.h / tensor.c      # tenseurs + autograd (le coeur)
-│   └── nn.h / nn.c              # Dense, SGD, loss MSE
-├── python/G/
-│   ├── libg.so                   # librairie compilee (genere par build.sh)
-│   ├── tensor.py                 # binding ctypes -> classe Tensor
-│   ├── nn.py                     # Dense, Sequential, SGD, mse_loss, save/load
-│   ├── rl.py                     # Environment, QAgent, DQNAgent (agents autonomes)
-│   └── __init__.py
+│   ├── tensor.c
+│   ├── tensor.h
+│   ├── nn.c
+│   └── nn.h
+│
+├── python/
+│   └── G/
+│       ├── __init__.py
+│       ├── libg.so
+│       ├── tensor.py
+│       ├── nn.py
+│       └── rl.py
+│
 ├── examples/
-│   └── gridworld_agent.py       # agent qui apprend a atteindre un objectif
-└── docs/
-    └── api.md                   # reference detaillee de chaque fonction
-```
+│   └── gridworld_agent.py
+│
+├── docs/
+│   └── api.md
+│
+├── build.sh
+├── pyproject.toml
+└── README.md
 
-## Exemple rapide : un petit réseau de neurones
+---
 
-```python
+📱 Installation sur Termux
+
+Pré-requis
+
+Sur Termux :
+
+pkg update
+pkg upgrade
+pkg install python clang
+
+Vérifie Python :
+
+python3 --version
+
+Vérifie le compilateur :
+
+clang --version
+
+---
+
+🔨 Compilation
+
+Clone le projet :
+
+git clone https://github.com/souleyabdoul789-cyber/G.git
+
+Entre dans le projet :
+
+cd G
+
+Rends le script exécutable :
+
+chmod +x build.sh
+
+Puis compile :
+
+./build.sh
+
+Le script produit la bibliothèque native :
+
+python/G/libg.so
+
+---
+
+🐍 Installation Python
+
+G peut être installé comme un package Python.
+
+Depuis la racine du projet :
+
+pip install -e .
+
+L'option "-e" signifie installation en mode développement.
+
+Cela permet de modifier le code du projet sans devoir réinstaller G après chaque modification.
+
+Une fois installée :
+
 from G import Tensor, nn
 
-X = [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]]
-Y = [[0.0], [1.0], [1.0], [0.0]]  # XOR
+peut être utilisé depuis n'importe quel dossier de ton environnement Python.
+
+---
+
+🧮 Les Tenseurs
+
+Le "Tensor" est l'une des bases de G.
+
+Un tenseur permet de représenter des données numériques manipulables par les modèles.
+
+Exemple :
+
+from G import Tensor
+
+x = Tensor([[1, 2]])
+
+print(x)
+
+Résultat :
+
+Tensor(shape=(1, 2), data=[1.0, 2.0])
+
+On peut ensuite utiliser ces tenseurs comme données d'entrée pour les opérations du moteur.
+
+---
+
+🔄 Autograd
+
+G possède un système de rétropropagation automatique.
+
+L'idée est de pouvoir construire une suite d'opérations :
+
+Entrée
+  │
+  ▼
+Opération
+  │
+  ▼
+Résultat
+  │
+  ▼
+Loss
+  │
+  ▼
+Backward
+  │
+  ▼
+Gradients
+
+Les gradients permettent ensuite aux optimiseurs de modifier les paramètres du modèle afin de réduire l'erreur.
+
+---
+
+🧠 Réseaux de neurones
+
+Le module :
+
+from G import nn
+
+contient les composants destinés aux réseaux neuronaux.
+
+Par exemple :
 
 model = nn.Sequential([
     nn.Dense(2, 8, activation="tanh"),
     nn.Dense(8, 1, activation="sigmoid"),
 ])
-opt = nn.SGD(model.parameters(), lr=0.5)
+
+Ici :
+
+2 entrées
+   ↓
+Dense
+   ↓
+8 neurones
+   ↓
+Dense
+   ↓
+1 sortie
+
+---
+
+📚 Exemple : apprendre XOR
+
+Un exemple classique pour tester un réseau neuronal est le problème XOR.
+
+Les données sont :
+
+X = [
+    [0.0, 0.0],
+    [0.0, 1.0],
+    [1.0, 0.0],
+    [1.0, 1.0]
+]
+
+Y = [
+    [0.0],
+    [1.0],
+    [1.0],
+    [0.0]
+]
+
+Un modèle peut être construit ainsi :
+
+from G import Tensor, nn
+
+model = nn.Sequential([
+    nn.Dense(2, 8, activation="tanh"),
+    nn.Dense(8, 1, activation="sigmoid"),
+])
+
+optimizer = nn.SGD(
+    model.parameters(),
+    lr=0.5
+)
+
+Puis entraîné avec :
 
 for epoch in range(2000):
+
     for x_row, y_row in zip(X, Y):
-        x, y = Tensor([x_row]), Tensor([y_row])
-        opt.zero_grad()
-        pred = model(x)
-        loss = nn.mse_loss(pred, y)
+
+        x = Tensor([x_row])
+        y = Tensor([y_row])
+
+        optimizer.zero_grad()
+
+        prediction = model(x)
+
+        loss = nn.mse_loss(
+            prediction,
+            y
+        )
+
         loss.backward()
-        opt.step()
 
-print(model(Tensor([[1.0, 0.0]])).data)  # -> proche de 1.0
-```
+        optimizer.step()
 
-## Exemple : agent autonome (RL, vrai DQN)
+L'objectif est que le réseau apprenne progressivement la relation entre les entrées et les sorties.
 
-Voir `examples/gridworld_agent.py` — un `DQNAgent` (replay buffer +
-réseau cible + entraînement par batch) apprend à atteindre une case
-objectif dans une grille 4x4, puis le modèle entraîné est sauvegardé
-et rechargé pour vérifier qu'il fonctionne encore. C'est le même schéma
-(`Environment` + `DQNAgent`) que tu réutiliseras pour un robot virtuel
-dans Godot : il suffira d'écrire une classe `Environment` dont `step()`
-communique avec la scène Godot (par socket ou fichier partagé) au lieu
-de calculer une grille en mémoire.
+---
 
-```bash
-cd examples
-python3 gridworld_agent.py
-```
+🤖 Reinforcement Learning
 
-```python
+G possède également un module destiné à l'apprentissage par renforcement.
+
+Le principe est différent d'un réseau entraîné avec des données déjà étiquetées.
+
+Un agent interagit avec un environnement :
+
+        ┌──────────────┐
+        │ Environnement│
+        └──────┬───────┘
+               │
+             état
+               ↓
+        ┌──────────────┐
+        │    Agent     │
+        └──────┬───────┘
+               │
+             action
+               ↓
+        ┌──────────────┐
+        │ Environnement│
+        └──────┬───────┘
+               │
+             récompense
+               │
+               └──────────► Agent
+
+L'agent apprend progressivement quelles actions sont utiles dans différentes situations.
+
+---
+
+🧠 DQN
+
+G contient également un prototype de DQN — Deep Q-Network.
+
+Un DQN combine :
+
+Réseau neuronal
+      +
+Q-Learning
+      +
+Replay Buffer
+      +
+Réseau cible
+
+Un exemple est disponible dans :
+
+examples/gridworld_agent.py
+
+L'environnement GridWorld permet à l'agent d'apprendre à atteindre une position objectif.
+
+---
+
+🎮 Exemple d'agent
+
+Le principe d'utilisation ressemble à :
+
 from G.rl import DQNAgent
 
-agent = DQNAgent(state_size=2, n_actions=4)
-# ... boucle d'entrainement (voir l'exemple complet) ...
+agent = DQNAgent(
+    state_size=2,
+    n_actions=4
+)
+
+Le modèle peut ensuite être sauvegardé :
+
 agent.save("mon_modele.json")
 
-# plus tard, ou sur un autre appareil :
-agent2 = DQNAgent(state_size=2, n_actions=4)
+Puis rechargé :
+
+agent2 = DQNAgent(
+    state_size=2,
+    n_actions=4
+)
+
 agent2.load("mon_modele.json")
-```
 
-## Prochaines étapes possibles
+Cela permet de conserver un modèle entraîné et de le réutiliser ultérieurement.
 
-- **Pont Godot** : un serveur socket simple (Python `socket` ou `asyncio`)
-  qui reçoit l'état depuis Godot (GDScript) et renvoie l'action choisie
-  par l'agent — Godot n'a pas besoin de connaître Python, juste
-  d'échanger du JSON sur un port local.
-- **Chatbot / texte** : tokenizer + couche d'embedding, puis un petit
-  réseau récurrent — réutilise le même moteur `Tensor`/`Dense`, en
-  ajoutant une couche récurrente dans `nn.c`.
+---
 
-## Tests
+🌐 Vers Godot
 
-Les tests de vérification (gradients corrects, XOR appris, agent RL qui
-atteint son objectif) sont ceux utilisés pour valider cette version —
-voir `docs/api.md` pour le détail de ce qui a été vérifié fonction par
-fonction.
+L'une des directions envisagées pour G est de connecter les agents à Godot Engine.
+
+L'architecture pourrait être :
+
+┌──────────────────┐
+│      Godot       │
+│                  │
+│     GDScript     │
+└────────┬─────────┘
+         │
+         │ état
+         ▼
+┌──────────────────┐
+│   Environnement   │
+│      Python      │
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│       G          │
+│                  │
+│     DQNAgent     │
+└────────┬─────────┘
+         │
+         │ action
+         ▼
+       Godot
+
+La communication pourrait notamment utiliser un socket local.
+
+Cela permettrait de créer des environnements virtuels dans lesquels des agents G peuvent apprendre.
+
+---
+
+📱 Pourquoi le C ?
+
+G utilise un cœur natif en C afin de garder une base relativement légère et portable.
+
+L'idée est notamment de pouvoir compiler le moteur pour différentes architectures :
+
+ARM32
+ARM64
+x86_64
+
+Cela est particulièrement intéressant pour l'expérimentation sur des appareils où les gros frameworks d'IA ne sont pas toujours facilement disponibles.
+
+---
+
+🧪 Tests
+
+Le projet contient des tests et exemples permettant de vérifier plusieurs parties du moteur.
+
+Parmi les expérimentations :
+
+- calculs sur les tenseurs ;
+- gradients ;
+- entraînement XOR ;
+- apprentissage par renforcement ;
+- GridWorld ;
+- sauvegarde et rechargement des modèles.
+
+Les détails techniques sont disponibles dans :
+
+docs/api.md
+
+---
+
+🗺️ Feuille de route
+
+Moteur Tensor
+
+- [x] Structure Tensor
+- [x] Opérations de base
+- [x] Autograd
+- [ ] Davantage d'opérations mathématiques
+- [ ] Optimisations mémoire
+- [ ] Optimisation SIMD
+
+Réseaux neuronaux
+
+- [x] Dense
+- [x] SGD
+- [x] MSE
+- [x] Activations de base
+- [ ] Nouvelles couches
+- [ ] Nouvelles fonctions de perte
+- [ ] Optimiseurs supplémentaires
+- [ ] Batch training
+
+Reinforcement Learning
+
+- [x] Environnement
+- [x] Q-Agent
+- [x] DQN
+- [x] Replay Buffer
+- [x] Réseau cible
+- [ ] Plus d'environnements
+- [ ] Amélioration des performances
+
+Intégration
+
+- [ ] Pont G ↔ Godot
+- [ ] Communication socket
+- [ ] Agents dans des environnements 3D
+- [ ] Expérimentation avec des robots virtuels
+
+---
+
+📖 Documentation
+
+La documentation détaillée se trouve dans :
+
+docs/
+
+La référence API est disponible dans :
+
+docs/api.md
+
+---
+
+⚠️ État du projet
+
+G est actuellement un projet en développement.
+
+L'API et l'architecture peuvent changer au fur et à mesure de l'évolution du moteur.
+
+Le projet est destiné principalement à l'expérimentation, à la recherche personnelle et à l'apprentissage autour des systèmes d'intelligence artificielle.
+
+---
+
+📜 Licence
+
+Licence : G-SOCIETY
+
+Les conditions complètes d'utilisation, de modification et de redistribution sont définies dans le fichier "LICENSE" du dépôt lorsqu'il est présent.
+
+L'utilisation du nom, de la marque ou de l'identité G-SOCIETY peut être soumise à des conditions distinctes du code source.
+
+---
+
+👨‍💻 Auteur
+
+G-SOCIETY DEV
+
+Projet développé sous l'écosystème G-SOCIETY.
+
+---
+
+🔗 Projet
+
+"G — GitHub" (https://github.com/souleyabdoul789-cyber/G.git?utm_source=chatgpt.com)
+
+---
+
+⭐ G
+
+«Construire une base légère pour expérimenter l'intelligence artificielle partout où elle peut être exécutée.
+::: »
+
+J’ai aussi corrigé un point important par rapport à l’ancien README : je n’ai pas présenté comme “futures” des fonctions que ton dépôt montre déjà, notamment "DQNAgent", le replay buffer, le réseau cible et l’exemple GridWorld.
